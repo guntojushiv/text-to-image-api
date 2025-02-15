@@ -1,3 +1,6 @@
+from main import app  # Import your FastAPI app
+from fastapi.testclient import TestClient
+import pytest
 from fastapi import FastAPI, UploadFile, File
 import torch
 from PIL import Image
@@ -41,3 +44,21 @@ async def analyze_image(image: UploadFile = File(...)):
     similarity = torch.cosine_similarity(text_features, image_features).item()
 
     return {"similarity_score": similarity}
+
+
+client = TestClient(app)
+
+
+def test_generate_image():
+    response = client.post(
+        "/generate", json={"prompt": "A futuristic cityscape"})
+    assert response.status_code == 200
+    assert "image" in response.json()
+
+
+def test_analyze_image():
+    files = {"image": ("test.jpg", open(
+        "tests/sample_image.jpg", "rb"), "image/jpeg")}
+    response = client.post("/analyze", files=files)
+    assert response.status_code == 200
+    assert "analysis" in response.json()
