@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Text-to-Image Generator</title>
+</head>
+<body>
+    <h1>Text-to-Image Generator</h1>
+    <input type="text" id="prompt" placeholder="Enter text">
+    <button onclick="generateImage()">Generate</button>
+    <img id="output" alt="Description of the image" width="256">
+
+    <script>
+        function generateImage() {
+            let prompt = document.getElementById("prompt").value;
+            fetch("http://localhost:8000/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "prompt": prompt })
+            })
+            .then(response => response.json())
+            .then(data => document.getElementById("output").src = "data:image/png;base64," + data.image);
+        }
+    </script>
+</body>
+</html>
